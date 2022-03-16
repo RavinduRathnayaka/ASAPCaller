@@ -81,9 +81,14 @@ void pauseDevice(){
 }
 
 String getPitchRoll() {
-  //Accelerometer configuration gose here
-  String serialOut = /*+pitch+*/" "/*+roll+*/" "; //Ends with single space " "
-  return serialOut;
+// Read Raw Values
+  Vector raw = mpu.readNormalizeAccel();
+  // Calculate Pitch & Roll
+  int pitch = -(atan2(raw.XAxis, sqrt(raw.YAxis * raw.YAxis + raw.ZAxis * raw.ZAxis)) * 180.0) / M_PI;
+  int roll = (atan2(raw.YAxis, raw.ZAxis) * 180.0) / M_PI;
+  // Output
+  String serialOut = (String)pitch + " " + (String)roll + " "; //Split values from single space " "
+  return serialOut; //Return as a string
 }
 
 String getVibration() {
