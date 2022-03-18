@@ -12,8 +12,131 @@
         Height="1080"
         Width="1920"
         Loaded="Window_Loaded">
+    <Window.Resources>
+        <!--#region Main Button-->
+        <ControlTemplate x:Key="btnMainConnectedStyle" TargetType="{x:Type Button}">
+            <Grid Height="700"
+                  Width="700">
+                <Ellipse Height="640"
+                         Stroke="{x:Null}"
+                         Canvas.Top="-270.122"
+                         Width="640"
+                         Canvas.Left="-8.5"
+                         HorizontalAlignment="Center"
+                         Fill="#7F000000"
+                         VerticalAlignment="Center">
+
+                </Ellipse>
+                <Ellipse x:Name="innerEllipse"
+                         Height="630"
+                         Stroke="{x:Null}"
+                         Width="630"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Canvas.Left="-4"
+                         Canvas.Top="-265">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FF00FF03"
+                                          Offset="0.856" />
+                            <GradientStop Color="#FF83FB84"
+                                          Offset="1" />
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="true">
+                    <Setter TargetName="innerEllipse"
+                            Property="Fill">
+                        <Setter.Value>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#FF00FF03"
+                                              Offset="0.5" />
+                                <GradientStop Color="#FF83FB84"
+                                              Offset="1" />
+                            </RadialGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <ControlTemplate x:Key="btnMainDisconnectedStyle"
+                         TargetType="{x:Type Button}">
+            <Grid Height="700"
+                  Width="700">
+                <Ellipse Height="640"
+                         Stroke="{x:Null}"
+                         Canvas.Top="-270.122"
+                         Width="640"
+                         Canvas.Left="-8.5"
+                         HorizontalAlignment="Center"
+                         Fill="#7F000000"
+                         VerticalAlignment="Center">
+
+                </Ellipse>
+                <Ellipse x:Name="innerEllipse"
+                         Height="630"
+                         Stroke="{x:Null}"
+                         Width="630"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Canvas.Left="-4"
+                         Canvas.Top="-265">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#454545"
+                                          Offset="0.856" />
+                            <GradientStop Color="#FF6B6B6B"
+                                          Offset="1" />
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="true">
+                    <Setter TargetName="innerEllipse"
+                            Property="Fill">
+                        <Setter.Value>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#FF00FF03"
+                                              Offset="0.5" />
+                                <GradientStop Color="#FF83FB84"
+                                              Offset="1" />
+                            </RadialGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <!--#endregion-->
+        <!--#region Background Styles-->
+        <Style x:Key="backgroundConnectedStye"
+               TargetType="Grid">
+            <Setter Property="Background"
+                    Value="#FF08FF00" />
+        </Style>
+        <Style x:Key="backgroundDisconnectedStye"
+               TargetType="Grid">
+            <Setter Property="Background"
+                    Value="#454545" />
+        </Style>
+        <Style x:Key="backgroundAccidentStye"
+               TargetType="Grid">
+            <Setter Property="Background"
+                    Value="Red" />
+        </Style>
+        <!--#endregion-->
+    </Window.Resources>
+
     <Grid x:Name="grdContainer"
-          Background="lime">
+          Style="{DynamicResource backgroundDisconnectedStye}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
@@ -24,15 +147,18 @@
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.Row="1"
-                   Grid.Column="1">
+        <DockPanel Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3"
+                   Grid.RowSpan="3">
             <Button x:Name="btnMain"
-                    Content="ASAP Caller Online"
+                    Content="ASAP Caller"
                     FontSize="75"
-                    Click="btnMain_Click" />
+                    Foreground="White"
+                    Template="{DynamicResource btnMainDisconnectedStyle}">
+            </Button>
         </DockPanel>
         <Canvas />
-
         <StackPanel x:Name="pnlSettingsContainer"
                     Grid.RowSpan="3"
                     HorizontalAlignment="Left"
@@ -46,6 +172,5 @@
                       Margin="5"
                       Unchecked="chkSettingsToggle_Unchecked"
                       Checked="chkSettingsToggle_Checked" />
-
     </Grid>
 </Window>

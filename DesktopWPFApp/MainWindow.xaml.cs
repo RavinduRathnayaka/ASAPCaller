@@ -29,7 +29,7 @@ namespace DesktopWPFApp {
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             SettingsView settings = new SettingsView(sc);
-            getValues();
+            getStatus();
             if(sc.SerialPorts!=null && sc.SerialPorts.Length!=0) {
                 sc.PortConnect();
             }
@@ -37,7 +37,8 @@ namespace DesktopWPFApp {
                 btnMain.Content = "Device is not connected";
             }
         }
-        public async void getValues() {
+        #region Ui updates on trigger
+        public async void getStatus() {
             while (true) {
                 UpdateUi();
                 await Task.Delay(1);
@@ -45,17 +46,23 @@ namespace DesktopWPFApp {
         }
         private void UpdateUi() {
             if (sc.AccidentDetected) {
-                grdContainer.Background = Brushes.Red;
+                grdContainer.Style = Resources["backgroundAccidentStye"] as Style;
+                btnMain.Click += BtnMain_Click;
             }
             else if (sc.Conntected) {
-                grdContainer.Background = Brushes.Lime;
+                grdContainer.Style = Resources["backgroundConnectedStye"] as Style;
+                btnMain.Template = Resources["btnMainConnectedStyle"] as ControlTemplate;
             }
             else if (!sc.Conntected) {
-                grdContainer.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#484848"));
+                grdContainer.Style = Resources["backgroundDisconnectedStye"] as Style;
+                btnMain.Template = Resources["btnMainDisconnectedStyle"] as ControlTemplate;
             }
             if (sc.Status.Contains("Connect")) {
                 AnimationConnecting();
             }
+        }
+        private void BtnMain_Click(object sender, RoutedEventArgs e) {
+            btnMain.Content = "Calling...";
         }
         private async void AnimationConnecting() {
             while (!sc.Conntected) {
@@ -64,12 +71,8 @@ namespace DesktopWPFApp {
             }
            btnMain.Content = "ASAP Caller Online";
         }
-        private void btnMain_Click(object sender, RoutedEventArgs e) {
-            sc.PortConnect();
-            SettingsView settings = new SettingsView(sc);
-            pnlSettingsContainer.Children.Add(settings);
-            getValues();
-        }
+        #endregion
+        #region Animations
         private void chkSettingsToggle_Checked(object sender, RoutedEventArgs e) {
             DoubleAnimation widthAnimation = new DoubleAnimation(400, new Duration(TimeSpan.FromSeconds(0.1)));
             pnlSettingsContainer.Children.Add(new SettingsView(sc));
@@ -83,5 +86,6 @@ namespace DesktopWPFApp {
         private void WidthAnimation_Completed(object? sender, EventArgs e) {
             pnlSettingsContainer.Children.Clear();
         }
+        #endregion
     }
 }
