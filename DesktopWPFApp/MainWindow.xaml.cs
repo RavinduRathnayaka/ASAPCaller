@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DesktopWPFApp.Models;
+using DesktopWPFApp.UserControls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -18,46 +21,43 @@ namespace DesktopWPFApp {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
-        Models.SerialCommunication sc = new Models.SerialCommunication();
+    public partial class MainWindow : Window  {
+        SerialCommunication sc = new SerialCommunication();
         public MainWindow() {
             InitializeComponent();
             
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            Models.SerialCommunication sc = new Models.SerialCommunication();
-            string[] serialPorts=sc.SerialPorts;
-            cmbPortNames.ItemsSource = serialPorts;
-            if (serialPorts.Length > 0) {
-                cmbPortNames.SelectedIndex = 0;
-                pitch.Text =cmbPortNames.Text;
-            }
+            getValues();
         }
-        private void cmbPortNames_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            sc.ChangePort("COM3");
-            
-        }
-        private async void ReadData() {
-            while (!sc.AccidentDetected) {
-                pitch.Text = sc.Pitch.ToString();
-                roll.Text = sc.Roll.ToString();
+
+        public async void getValues() {
+            while (true) {
+                
                 await Task.Delay(1);
             }
-            
-            
         }
 
-        private void btnSettingsToggle_Click(object sender, RoutedEventArgs e) {
-            ReadData();
-        }
-
-        private void chbxConnection_Checked(object sender, RoutedEventArgs e) {
+        private void btnMain_Click(object sender, RoutedEventArgs e) {
             sc.PortConnect();
+            SettingsView settings = new SettingsView(sc);
+            pnlSettingsContainer.Children.Add(settings);
+            getValues();
         }
 
-        private void chbxConnection_Unchecked(object sender, RoutedEventArgs e) {
-            sc.PortDisConnect();
+        private void chkSettingsToggle_Checked(object sender, RoutedEventArgs e) {
+            DoubleAnimation widthAnimation=new DoubleAnimation(400, new Duration(TimeSpan.FromSeconds(0.1)));
+            pnlSettingsContainer.Children.Add(new SettingsView(sc));
+            pnlSettingsContainer.BeginAnimation(WidthProperty, widthAnimation);
+        }
+        private void chkSettingsToggle_Unchecked(object sender, RoutedEventArgs e) {
+            DoubleAnimation widthAnimation = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(0.1)));
+            widthAnimation.Completed += WidthAnimation_Completed;
+            pnlSettingsContainer.BeginAnimation(WidthProperty, widthAnimation);
+        }
+        private void WidthAnimation_Completed(object? sender, EventArgs e) {
+            pnlSettingsContainer.Children.Clear();
         }
     }
 }

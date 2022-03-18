@@ -6,19 +6,35 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DesktopWPFApp.Models {
-    internal class SerialCommunication {
+    public class SerialCommunication {
         public bool AccidentDetected = false;
         public bool DriverInCar = true;
+        public bool Conntected=false;
         #region Port setup
         public string[] SerialPorts { get; set; }
         private SerialPort port = new SerialPort() {
-            PortName = "COM3",  //TEST: Hardcoded port name 
+            //TEST: Hardcoded port name PortName = "COM3",  
             BaudRate = 9600,    //Same as Arduino
             DtrEnable = true
         };
         public SerialCommunication() {
-            SerialPorts = SerialPort.GetPortNames();    //GET: Any available serial port names
+            PortUpdate();    //GET: Any available serial port names
             port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+            port.PinChanged += new SerialPinChangedEventHandler(PinChanged);
+            Conntected = port.IsOpen;
+        }
+
+        private void PinChanged(object sender, SerialPinChangedEventArgs e) {
+            PortUpdate();
+            if(SerialPorts==null || SerialPorts.Length == 0) {
+                if (port.IsOpen) {
+                    PortDisConnect();
+                }
+                AccidentDetected = true;
+            }
+        }
+        public void PortUpdate() {
+            SerialPorts = SerialPort.GetPortNames();
         }
         public void ChangePort(string aPortName) {
             port.PortName = aPortName;
@@ -26,6 +42,7 @@ namespace DesktopWPFApp.Models {
         public void PortConnect() {
             try {
                 port.Open();
+                Conntected= port.IsOpen;
             }
             catch (Exception) {
                 throw new Exception("Cannot connect to Device");    //TODO: Update Ui
@@ -34,6 +51,7 @@ namespace DesktopWPFApp.Models {
         public void PortDisConnect() {
             try {
                 port.Close();
+                Conntected = port.IsOpen;
             }
             catch (Exception) {
                 throw new Exception("Cannot disconnect");   //TODO: Update Ui
@@ -77,13 +95,19 @@ namespace DesktopWPFApp.Models {
         #endregion
         #region Serial Communication
         private void SerialWrite(string aSerial) {
-            if (!String.IsNullOrEmpty(aSerial)) {
+            if (!String.IsNullOrEmpty(aSerial) || port.IsOpen) {
                 port.WriteLine(aSerial);
             }
         }
         private void SerialRead() {
-            Console.WriteLine($"{Pitch} {Roll}");
-            string serial = port.ReadLine();
+            string? serial = null;
+            try {
+                serial = port.IsOpen ? port.ReadLine() : null;
+            }
+            catch {
+                serial = null;
+            }
+            
             if (!String.IsNullOrEmpty(serial)) {
                 if (serial.Contains("Reading>>") && !serial.Contains("Pause")) {
                     string[] SerialIn = serial.Split(" ");
@@ -100,7 +124,11 @@ namespace DesktopWPFApp.Models {
                 }
             }
         }
-        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e) => SerialRead();
+        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e) {
+            if (port.IsOpen) {
+                SerialRead();
+            }
+        }
         #endregion
         #endregion
     }

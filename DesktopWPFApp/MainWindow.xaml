@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:sc="clr-namespace:DesktopWPFApp.Models"
+        xmlns:views="clr-namespace:DesktopWPFApp.UserControls"
         xmlns:local="clr-namespace:DesktopWPFApp"
         mc:Ignorable="d"
         Title="ASAP Caller"
@@ -26,63 +27,24 @@
                    Grid.Column="1">
             <Button x:Name="btnMain"
                     Content="ASAP Caller Online"
-                    FontSize="75" />
+                    FontSize="75"
+                    Click="btnMain_Click" />
         </DockPanel>
         <Canvas />
-        <StackPanel Grid.RowSpan="3"
-                    Orientation="Horizontal">
-            <StackPanel x:Name="pnlSettingsContainer"
-                        Orientation="Vertical"
-                        Background="#484848"
-                        Width="287">
-                <DockPanel Background="#282828">
-                    <Button HorizontalAlignment="Left"
-                            x:Name="btnSettingsToggle"
-                            Height="64"
-                            Width="64"
-                            Margin="5"
-                            Click="btnSettingsToggle_Click" />
-                    <Label Content="Settings"
-                           FontSize="48"
-                           Foreground="White"
-                           Width="208" />
-                </DockPanel>
-                <DockPanel>
-                    <Label Content="Connection"
-                           HorizontalAlignment="Left"
-                           FontSize="32"
-                           Foreground="White"
-                           Width="196" />
-                    <CheckBox x:Name="chbxConnection"
-                              Checked="chbxConnection_Checked"
-                              Unchecked="chbxConnection_Unchecked"
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Center"
-                                 Margin="5"
-                                 Width="64"
-                                 Height="32" />
-                </DockPanel>
-                <DockPanel>
-                    <Label Content="Port"
-                           FontSize="32"
-                           Foreground="White"
-                           Width="72" />
-                    <ComboBox x:Name="cmbPortNames"
-                              FontSize="24"
-                              Width="208"
-                              Margin="5,10"
-                              SelectionChanged="cmbPortNames_SelectionChanged" />
-                </DockPanel>
-                <DockPanel>
-                    <TextBlock x:Name="pitch"
-                               Text="0"
-                               FontSize="32" />
-                    <TextBlock x:Name="roll"
-                               Text="0"
-                               FontSize="32"
-                               Width="50" />
-                </DockPanel>
-            </StackPanel>
-        </StackPanel>
+
+        <StackPanel x:Name="pnlSettingsContainer"
+                    Grid.RowSpan="3"
+                    HorizontalAlignment="Left"
+                    Orientation="Horizontal"
+                    Width="0" />
+        <ToggleButton VerticalAlignment="Top"
+                      HorizontalAlignment="Left"
+                      x:Name="chkSettingsToggle"
+                      Height="64"
+                      Width="64"
+                      Margin="5"
+                      Unchecked="chkSettingsToggle_Unchecked"
+                      Checked="chkSettingsToggle_Checked" />
+
     </Grid>
 </Window>
