@@ -9,7 +9,8 @@ namespace DesktopWPFApp.Models {
     public class SerialCommunication {
         public bool AccidentDetected = false;
         public bool DriverInCar = true;
-        public bool Conntected=false;
+        public bool Conntected = false;
+        public string Status = "";
         #region Port setup
         public string[] SerialPorts { get; set; }
         private SerialPort port = new SerialPort() {
@@ -26,8 +27,9 @@ namespace DesktopWPFApp.Models {
 
         private void PinChanged(object sender, SerialPinChangedEventArgs e) {
             PortUpdate();
-            if(SerialPorts==null || SerialPorts.Length == 0) {
+            if (SerialPorts == null || SerialPorts.Length == 0) {
                 if (port.IsOpen) {
+                    AccidentDetected = true;
                     PortDisConnect();
                 }
                 AccidentDetected = true;
@@ -41,8 +43,9 @@ namespace DesktopWPFApp.Models {
         }
         public void PortConnect() {
             try {
+                Status = "Connecting";
                 port.Open();
-                Conntected= port.IsOpen;
+
             }
             catch (Exception) {
                 throw new Exception("Cannot connect to Device");    //TODO: Update Ui
@@ -96,7 +99,13 @@ namespace DesktopWPFApp.Models {
         #region Serial Communication
         private void SerialWrite(string aSerial) {
             if (!String.IsNullOrEmpty(aSerial) || port.IsOpen) {
-                port.WriteLine(aSerial);
+                try {
+                    port.WriteLine(aSerial);
+                }
+                catch {
+                    return;
+                }
+
             }
         }
         private void SerialRead() {
@@ -105,10 +114,11 @@ namespace DesktopWPFApp.Models {
                 serial = port.IsOpen ? port.ReadLine() : null;
             }
             catch {
-                serial = null;
+                return;
             }
-            
+
             if (!String.IsNullOrEmpty(serial)) {
+                Status = serial;
                 if (serial.Contains("Reading>>") && !serial.Contains("Pause")) {
                     string[] SerialIn = serial.Split(" ");
                     SetSensorValues(SerialIn);
@@ -118,6 +128,7 @@ namespace DesktopWPFApp.Models {
                 }
                 else if (serial.Contains("Connected")) {
                     SerialWrite("c");
+                    Conntected = port.IsOpen;
                 }
                 else if (serial.Contains("Connecting to WPF")) {
                     SerialWrite("C");

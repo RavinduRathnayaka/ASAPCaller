@@ -12,7 +12,8 @@
         Height="1080"
         Width="1920"
         Loaded="Window_Loaded">
-    <Grid Background="lime">
+    <Grid x:Name="grdContainer"
+          Background="lime">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />

@@ -23,8 +23,9 @@ namespace DesktopWPFApp.UserControls {
         public SettingsView(SerialCommunication aSc) {
             sc = aSc;
             InitializeComponent();
+            UserControl_Loaded(null, null);
         }
-        private void UserControl_Loaded(object sender, RoutedEventArgs e) {
+        private void UserControl_Loaded(object? sender, RoutedEventArgs ?e) {
             UpdateControllers();
             Readdata();
         }
@@ -45,7 +46,7 @@ namespace DesktopWPFApp.UserControls {
             chbxConnection.IsEnabled = cmbPortNames.Items.IsEmpty ? false : true;
         }
         private void cmbPortNames_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (!cmbPortNames.Items.IsEmpty) {
+            if (!cmbPortNames.Items.IsEmpty && !sc.Conntected) {
                 sc.ChangePort(cmbPortNames.SelectedItem.ToString());
             }
             else {
