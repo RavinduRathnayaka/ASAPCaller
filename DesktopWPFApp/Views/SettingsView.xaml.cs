@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DesktopWPFApp.UserControls {
+namespace DesktopWPFApp.Views {
     /// <summary>
     /// Interaction logic for SettingsView.xaml
     /// </summary>
