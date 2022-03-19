@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DesktopWPFApp.Models {
@@ -104,7 +105,7 @@ namespace DesktopWPFApp.Models {
         }
         #endregion
         #region Serial Communication
-        private void SerialWrite(string aSerial) {
+        public void SerialWrite(string aSerial) {
             if (!String.IsNullOrEmpty(aSerial) || port.IsOpen) {
                 try {
                     port.WriteLine(aSerial);

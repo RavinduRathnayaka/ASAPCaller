@@ -22,11 +22,11 @@ namespace DesktopWPFApp {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [Obsolete]
     public partial class MainWindow : Window {
         SerialCommunication sc = new SerialCommunication();
         public MainWindow() {
             InitializeComponent();
-
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             SettingsView settings = new SettingsView(sc);
@@ -45,16 +45,23 @@ namespace DesktopWPFApp {
                 await Task.Delay(1);
             }
         }
+        
+
         private void UpdateUi() {
             if (sc.AccidentDetected) {
-                grdContainer.Style = Resources["backgroundAccidentStye"] as Style;
-                btnMain.Template = Resources["btnMainAccidentStyle"] as ControlTemplate;
-                CountDownToCall();
-                btnMain.Click += BtnMain_Click;
+                if (!WaiitingForResponse) {
+                    grdContainer.Style = Resources["backgroundAccidentStye"] as Style;
+                    btnMain.Template = Resources["btnMainAccidentStyle"] as ControlTemplate;
+                    Thread countDown = new Thread(CountDownToCall);
+                    countDown.Start();
+                    WaiitingForResponse = true;
+                    btnMain.Click += BtnMain_Click;
+                }
             }
             else if (sc.Conntected) {
                 grdContainer.Style = Resources["backgroundConnectedStye"] as Style;
                 btnMain.Template = Resources["btnMainConnectedStyle"] as ControlTemplate;
+                btnMain.Content = "ASAP Caller Online";
                 btnMain.Click -= BtnMain_Click;
                 btnStopCall.Visibility = Visibility.Hidden;
                 txtblkQ.Visibility = Visibility.Hidden;
@@ -73,27 +80,62 @@ namespace DesktopWPFApp {
         }
         private bool IsCalling = false;
         private bool StopCalling=false;
+        private bool WaiitingForResponse=false;
+
         private void CountDownToCall() {
-            txtblkQ.Visibility = Visibility.Visible;
-            btnStopCall.Visibility = Visibility.Visible;
-            txtblkStatus.Visibility = Visibility.Visible;
-            btnMain.Content = "Collision Detected";
-            txtblkStatus.Text = "Calling in..";
-            txtblkCount.Visibility = Visibility.Visible;
-            for (int i = 10; i > 0 && !IsCalling && !StopCalling; i--) {
-                //TODO: add Countdown and animation
+            Dispatcher.Invoke(() => {
+                txtblkQ.Visibility = Visibility.Visible;
+                btnStopCall.Visibility = Visibility.Visible;
+                txtblkStatus.Visibility = Visibility.Visible;
+                btnMain.Content = "Collision Detected";
+                txtblkStatus.Text = "Calling in..";
+                txtblkCount.Visibility = Visibility.Visible;
+            });
+            for (int i = 10; i >= 0 && !IsCalling && !StopCalling; i--) {
+                MessageBox.Show(StopCalling.ToString());
+                Dispatcher.Invoke(() => {
+                    txtblkCount.Text = i.ToString();
+                });
+                Thread.Sleep(1000);
             }
+            if (!StopCalling) {
+                SendCall();
+            }
+            StopCalling = false;
         }
         private void StopCall() {
+            MessageBox.Show("Stop call");
             StopCalling = true;
             btnStopCall.Visibility = Visibility.Hidden;
-            //TODO: Reset app?
+            ResetSerialData();
+            WaiitingForResponse = false;
         }
+
+        private void ResetSerialData() {
+            sc.AccidentDetected = false;
+            sc.SerialWrite("c");
+            getStatus();
+        }
+
         private void BtnMain_Click(object sender, RoutedEventArgs e) {
-            btnMain.Content = "Calling...";
-            IsCalling=true;
+            SendCall();
+        }
+
+        private void SendCall() {
+            MessageBox.Show("Send call");
+            IsCalling = true;
+            Dispatcher.Invoke(() => {
+                btnMain.Content = "Calling...";
+                btnMain.Content = "Calling For Help...";
+                btnStopCall.Visibility = Visibility.Hidden;
+                txtblkQ.Visibility = Visibility.Hidden;
+                btnStopCall.Visibility = Visibility.Hidden;
+                txtblkStatus.Visibility = Visibility.Hidden;
+                txtblkCount.Visibility = Visibility.Hidden;
+            });
             //TODO: Serialcom Call..
         }
+
         private void btnStopCall_Click(object sender, RoutedEventArgs e) {
             StopCall();
         }
