@@ -55,6 +55,7 @@ namespace DesktopWPFApp.UserControls {
         }
         private void chbxConnection_Checked(object sender, RoutedEventArgs e) {
             if (!sc.Conntected) {
+                sc.Reset();
                 sc.PortConnect();
                 cmbPortNames.IsEnabled = false;
             }

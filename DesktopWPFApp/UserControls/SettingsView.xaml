@@ -7,8 +7,11 @@
              xmlns:sc="clr-namespace:DesktopWPFApp.Models"
              mc:Ignorable="d" 
              d:DesignHeight="1080"
-             d:DesignWidth="289.115"
+             d:DesignWidth="404.769"
              Loaded="UserControl_Loaded">
+    <UserControl.Effect>
+            <DropShadowEffect BlurRadius="30" />
+    </UserControl.Effect>
     
     <StackPanel x:Name="pnlSettings"
                 Orientation="Vertical"

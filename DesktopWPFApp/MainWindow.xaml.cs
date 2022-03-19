@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace DesktopWPFApp {
     /// <summary>
@@ -30,7 +31,7 @@ namespace DesktopWPFApp {
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             SettingsView settings = new SettingsView(sc);
             getStatus();
-            if(sc.SerialPorts!=null && sc.SerialPorts.Length!=0) {
+            if (sc.SerialPorts != null && sc.SerialPorts.Length != 0) {
                 sc.PortConnect();
             }
             else {
@@ -47,29 +48,61 @@ namespace DesktopWPFApp {
         private void UpdateUi() {
             if (sc.AccidentDetected) {
                 grdContainer.Style = Resources["backgroundAccidentStye"] as Style;
+                btnMain.Template = Resources["btnMainAccidentStyle"] as ControlTemplate;
+                CountDownToCall();
                 btnMain.Click += BtnMain_Click;
             }
             else if (sc.Conntected) {
                 grdContainer.Style = Resources["backgroundConnectedStye"] as Style;
                 btnMain.Template = Resources["btnMainConnectedStyle"] as ControlTemplate;
+                btnMain.Click -= BtnMain_Click;
+                btnStopCall.Visibility = Visibility.Hidden;
+                txtblkQ.Visibility = Visibility.Hidden;
+                btnStopCall.Visibility = Visibility.Hidden;
+                txtblkStatus.Visibility = Visibility.Hidden;
+                txtblkCount.Visibility = Visibility.Hidden;
             }
             else if (!sc.Conntected) {
                 grdContainer.Style = Resources["backgroundDisconnectedStye"] as Style;
                 btnMain.Template = Resources["btnMainDisconnectedStyle"] as ControlTemplate;
+                btnMain.Click -= BtnMain_Click;
             }
             if (sc.Status.Contains("Connect")) {
                 AnimationConnecting();
             }
         }
+        private bool IsCalling = false;
+        private bool StopCalling=false;
+        private void CountDownToCall() {
+            txtblkQ.Visibility = Visibility.Visible;
+            btnStopCall.Visibility = Visibility.Visible;
+            txtblkStatus.Visibility = Visibility.Visible;
+            btnMain.Content = "Collision Detected";
+            txtblkStatus.Text = "Calling in..";
+            txtblkCount.Visibility = Visibility.Visible;
+            for (int i = 10; i > 0 && !IsCalling && !StopCalling; i--) {
+                //TODO: add Countdown and animation
+            }
+        }
+        private void StopCall() {
+            StopCalling = true;
+            btnStopCall.Visibility = Visibility.Hidden;
+            //TODO: Reset app?
+        }
         private void BtnMain_Click(object sender, RoutedEventArgs e) {
             btnMain.Content = "Calling...";
+            IsCalling=true;
+            //TODO: Serialcom Call..
+        }
+        private void btnStopCall_Click(object sender, RoutedEventArgs e) {
+            StopCall();
         }
         private async void AnimationConnecting() {
             while (!sc.Conntected) {
                 btnMain.Content = sc.Status;
                 await Task.Delay(1);
             }
-           btnMain.Content = "ASAP Caller Online";
+            btnMain.Content = "ASAP Caller Online";
         }
         #endregion
         #region Animations
@@ -87,5 +120,7 @@ namespace DesktopWPFApp {
             pnlSettingsContainer.Children.Clear();
         }
         #endregion
+
+        
     }
 }

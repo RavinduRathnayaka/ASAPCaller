@@ -60,6 +60,13 @@ namespace DesktopWPFApp.Models {
                 throw new Exception("Cannot disconnect");   //TODO: Update Ui
             }
         }
+
+        public void Reset() {
+            AccidentDetected = false;
+            DriverInCar = true;
+            Conntected = false;
+            Status = "";
+        }
         #endregion
         #region Arduino Connection
         #region Sensor values
