@@ -6,6 +6,7 @@
         xmlns:sc="clr-namespace:DesktopWPFApp.Models"
         xmlns:views="clr-namespace:DesktopWPFApp.Views"
         xmlns:local="clr-namespace:DesktopWPFApp"
+        xmlns:fa="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
         Title="ASAP Caller"
         WindowState="Maximized"
@@ -33,11 +34,15 @@
                     Width="0" />
         <ToggleButton VerticalAlignment="Top"
                       HorizontalAlignment="Left"
+                      Background="Transparent"
+                      BorderBrush="White"
                       x:Name="chkSettingsToggle"
                       Height="64"
                       Width="64"
                       Margin="5"
                       Unchecked="chkSettingsToggle_Unchecked"
-                      Checked="chkSettingsToggle_Checked" />
+                      Checked="chkSettingsToggle_Checked" 
+                      fa:Awesome.Content="Solid_Cog"
+                      FontSize="50" />
     </Grid>
 </Window>
